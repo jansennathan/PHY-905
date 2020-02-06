@@ -1,0 +1,112 @@
+SHELL=/bin/sh
+
+# Programmer:  Nathan Jansen jansenn1@msu.edu
+# Latest revision: 03-Feb-2020
+
+
+###########################################################################
+# 1. Specify base name, source files, header files, input files
+########################################################################### 
+
+# The base for the names of the makefile, executable command, etc.
+BASE=  Harmonic_series
+
+# Put all C++ (or other) source files here.  NO SPACES after continuation \'s.
+SRCS= \
+Harmonic_series.cpp 
+
+# Put all header files here.  NO SPACES after continuation \'s.
+HDRS= \
+
+# Put any input files you want to be saved in tarballs (e.g., sample files).
+INPFILE= \
+
+###########################################################################
+# 2. Generate names for object files, makefile, command to execute, tar file
+########################################################################### 
+
+# *** YOU should not edit these lines unless to change naming conventions ***
+
+OBJS= $(addsuffix .o, $(basename $(SRCS)))
+MAKEFILE= make_$(BASE)
+COMMAND=  $(BASE).x
+TARFILE= $(BASE).tar.gz
+ZIPFILE= $(BASE).zip
+
+###########################################################################
+# 3. Commands and options for different compilers
+########################################################################### 
+
+#
+# Compiler parameters
+#
+# CXX           Name of the C++ compiler to use
+# CFLAGS        Flags to the C++ compiler
+# CWARNS        Warning options for C++ compiler
+# F90           Name of the fortran compiler to use (if relevant) 
+# FFLAGS        Flags to the fortran compiler 
+# LDFLAGS       Flags to the loader
+# LIBS          A list of libraries 
+#
+
+CXX= g++
+CFLAGS=  -g -O2
+CWARNS= -Werror -Wall -W -Wshadow -fno-common 
+MOREFLAGS= -Wpedantic -Wpointer-arith -Wcast-qual -Wcast-align \
+           -Wwrite-strings -fshort-enums 
+
+# add relevant libraries and link options
+LIBS=           
+LDFLAGS= -lgsl -lgslcblas 
+ 
+###########################################################################
+# 4. Instructions to compile and link, with dependencies
+########################################################################### 
+all:    $(COMMAND) 
+
+.SUFFIXES:
+.SUFFIXES: .o .mod .f90 .f .cpp
+
+#%.o:   %.mod 
+
+# This is the command to link all of the object files together. 
+#  For fortran, replace CXX by F90.
+$(COMMAND): $(OBJS) $(MAKEFILE) 
+	$(CXX) -o $(COMMAND) $(OBJS) $(LDFLAGS) $(LIBS)
+
+# Command to make object (.o) files from C++ source files (assumed to be .cpp).
+#  Add $(MOREFLAGS) if you want additional warning options.
+.cpp.o: $(HDRS) $(MAKEFILE)
+	$(CXX) -c $(CFLAGS) $(CWARNS) -o $@ $<
+
+# Commands to make object (.o) files from Fortran-90 (or beyond) and
+#  Fortran-77 source files (.f90 and .f, respectively).
+.f90.mod:
+	$(F90) -c $(F90FLAGS) -o $@ $< 
+ 
+.f90.o: 
+	$(F90) -c $(F90FLAGS) -o $@ $<
+ 
+.f.o:   
+	$(F90) -c $(FFLAGS) -o $@ $<
+      
+##########################################################################
+# 5. Additional tasks      
+##########################################################################
+      
+# Delete the program and the object files (and any module files)
+clean:
+	/bin/rm -f $(COMMAND) $(OBJS)
+	/bin/rm -f $(MODIR)/*.mod
+ 
+# Pack up the code in a compressed gnu tar file 
+tarz:
+	tar cfvz $(TARFILE) $(MAKEFILE) $(SRCS) $(HDRS) $(MODIR) $(INPFILE) 
+
+# Pack up the code in a zip archive
+zip:
+	zip -r $(ZIPFILE) $(MAKEFILE) $(SRCS) $(HDRS) $(MODIR) $(INPFILE) 
+
+##########################################################################
+# That's all, folks!     
+##########################################################################
