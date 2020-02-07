@@ -15,6 +15,16 @@
 //  Notes:
 //		  Compile with make -f make_harmonic_series
 //
+//	Discussion 
+//		7-Feb-2020:  
+//  	The error looks like a power law in the entirety of the region I plotted. I added a fit and the slope
+//  	the slop is one, meaning that it is jumping single orders of magnitude in error. This error is easily explained
+//		with round off error. When summing up, each value gets smaller by an order of magnitude, when being added to one in
+//		single precision this will just round based on the one so when N is very large it ignores it and will reach a point
+// 		where N will no longer be part of the sum, thus giving an upper value on what the computer can calculate,
+//  	When summing down however each case is adding larger values, up by an order of magnitude in each case. This allows for 
+//		each value to contribute to the sum as there is not much round off. 
+//
 //*************************************************************************
 
 

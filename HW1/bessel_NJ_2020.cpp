@@ -17,7 +17,21 @@
 //             copyrighted by John Wiley and Sons, New York               
 //             code copyrighted by RH Landau  
 //   * added relative error calculation and output to bessel.cpp
-//   * data saved as: x y1 y2 rel_error log10(x) log10(rel_error) 
+//   * data saved as: x y1 y2 rel_error log10(x) log10(rel_error)
+//
+//
+//
+//	Discussion 
+//		7-Feb-2020:  From x=0 to x= 10 ( in log log x= 0 to 1) there is a sharp slope downward, nearly m = - 16.  Looking at the .dat file it is an interesting
+//		region of the graph because its a linear log log so the error is decreasing logathrimcally as approaches 10.  When the error is unity, it means that the 
+//		values are very different and as such the error is large. Looking at the number sin the .dat file the up recursion value is two orders of magnitude
+// 		greater than the down recursion. This is likely resulting in significant round off error resulting in up/up and unity for the error value. In the middle region
+// 		where 10 < x < 15, the error is the lowest with a near zero slope. This is a region where the numbers produced from the plots are higly similar thus the error is low, however there are 
+//  	some points where the error is zero and thus -20 on the log log plot, this is likely due to the fact that the values are so close or equal and subtractive cancelation
+//  	is occuring resulting in a zero value. The low error is due to the fact that there is not much difference in the recursions at these values so the numbers are in the 
+//  	same order of magnitude.  It is clear from the .dat file that the large error occurs when the values are in the same order of magnitude, thus it is likely that most of 
+// 		the additional error is due to round off error.
+//
 //  
 //************************************************************************
 
@@ -54,8 +68,8 @@ main (void)
   my_out << "# Spherical Bessel functions via up and down recursion," 
          << " l = " << order << endl;
 	 
-  my_out << "#   x       jdown(x)      jup(x)       rel. error     ";
-  my_out << "log10(x)    log10(rel.err.)" << endl; 
+  my_out << "#   x       jdown(x)      jup(x)         rel. error        ";
+  my_out << "  log10(x)    log10(rel.err.)   Bessel GSL Routuine" << endl; 
 	 
 
   // step through different x values
@@ -65,7 +79,7 @@ main (void)
       ans_up = up_recursion (x, order);
 	  rel_error = error (ans_up, ans_down);
       // Calculation for the absolute value of the relative error between the up and down recursions
-	  bessel = gsl_sf_bessel_jl(10, x);
+	  bessel = gsl_sf_bessel_jl(10, x); // the GSL bessel function
 	  
       if (rel_error > 1.e-20)
 	{
@@ -78,10 +92,10 @@ main (void)
       my_out << fixed << setprecision (8) << setw (8) << x << " "
 	<< scientific << setprecision (8)
 	<< setw (13) << ans_down << " "
-	<< setw (13) << ans_up << " "
-	<< setw (13) << log10(rel_error) << " "
-	<< setw (13) << log10 (x) << " "
-	<< setw (13) << log_rel_error << " " << setw(13) << bessel
+	<< setw (13) << ans_up << "  "
+	<< setw (13) << rel_error << "  "
+	<< setw (13) << log10 (x) << "  "
+	<< setw (13) << log_rel_error << "  " << setw(13) << bessel
         << endl;
     }
   cout << "data stored in bessel_NJ_2020.dat." << endl;
