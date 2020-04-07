@@ -1,0 +1,41 @@
+# HW grading scale: check(++) --> excellent (good code and analysis AND also completed bonus problem)  
+#                   check(+) --> excellent (good code and analysis)  
+#                   check    --> satisfactory (minor shortcomings in code and/or analysis)
+#                   check(-) --> significant problems w/code or analysis
+
+1) Problem 1 (area.cpp embellishments): 
+looks good. One small nitpick-- you didn't check for "illegal" values of the input radius. But this is pretty
+minor since you did a lot of other things. Ok, wait. I just saw in your output file that when I entered
+-1, the output says "negative radius". That said, it would more helpful to alert the user that an illegal value 
+was entered (e.g., by aborting the program and spitting out an error message).  
+
+2)Problem 2 (sum up/down): 
+
+Your figure and output data look good, and you have the right idea for the analysis. I.e., this
+problem just a bit more complicated version of the 1+eps+eps... vs eps + eps +...+1 
+problem we did in class. So the downward sum is more precise.  
+
+One important coding suggestion-- your current code is kind of cumbersome by explicitly adding up the sums in
+the main program inside the loop over N. It would be MUCH cleaner to split these sums out into the "sup" and 
+"sdown" functions you define.  
+
+3) Problem 3 (bessel functions): 
+
+The results/analysis are correct regarding regions in x where the two
+schemes substantially disagree with each other. Note that the relative error plot
+doesn't tell you WHICH result (upward or downward recursion) is more reliable. How could
+you determine which one is best in each region of x? (Hint: GSL)  
+
+(Sidenote: If interested, you can understand numerical value of the slope between x=1 and 10
+using the short-distance x << l expressions of the spherical bessel and neumann functions. See Ch. 4 
+notes. I wonder if one can play similar games for the VERY steep 
+region above x = 30 using the asymptotic x >> l expressions for jl(x) and nl(x).)
+
+
+4) Extra problem (roundoff distribution):
+NA
+
+##### HW grade = check 
+
+Upgrade your grade: Fix the code per my suggestions in 2 to get a check(+). 
+Additionally do the bonus for a check(++). 
