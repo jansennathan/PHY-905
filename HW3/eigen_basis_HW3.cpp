@@ -149,27 +149,41 @@ main ()
             if (i == 0) 
 		    {
              wavefunction.open(oss.str());
-			 double error = 0;
+			 double error_low = 0;
+			 double error_mid = 0;
+			 double error_high = 0;
              for (double n = 0; n < 10 ; n+=.05)  // this is the loop for making the wavefunction in the ground state
 		     {
                double psi = 0;
-		       double wavereal = 2*n*exp(-n);			   
+		       double wavereal = 2*n*exp(-n);			   //analytical solution
                for (int j = 0; j < dimension; j++)
                {
 				 
-                 double vect = gsl_vector_get (eigenvector_ptr, j);
-                 double basis = ho_radial(j+1,0,b_ho,n);
-                 psi += vect * basis;			          
+                 double vect = gsl_vector_get (eigenvector_ptr, j);		// eigen vectors
+                 double basis = ho_radial(j+1,0,b_ho,n);				// basis vectors
+                 psi += vect * basis;			          				//summing up the scaled basis vectors for wave function
                }
-			   if (n >0)
+			   if ( (0 < n) && (n <= 3))						//these statements to asses short, mid, and long range error
 			   {
-			   error += abs((wavereal-psi)/wavereal);
+			     error_low += abs((wavereal-psi)/wavereal);
 			   }
+			   else if ( (3.5 <= n) && (n <= 5))
+			   {
+				 error_mid += abs((wavereal-psi)/wavereal);
+			   }
+			   else if ((6.5 <= n) && (n <= 8 ))
+			   {
+				 error_high += abs((wavereal-psi)/wavereal);
+			   }
+			 
+				   
             wavefunction  << n << "      " << abs(psi) << "     "  << wavereal << "     "  << endl;
              }
 			
-			wave_error << dimension << "    "  <<  error <<  endl;
-			error = 0;
+			wave_error << dimension << "    "  <<  error_low << "   "   <<  error_mid << "   " << error_high <<  endl;
+			error_low = 0;
+			error_mid = 0;
+			error_high = 0;
 			wavefunction.close();
            }
 			
