@@ -18,8 +18,9 @@
 //  becomes a worse approximation and you would want to use a different basis. Based on the error plot from the
 //  error assement you can see that the low range values are the best fit while high and mid are generally poor in
 //  in comparison.  This again can be attributed to the HO basis.  These are the Hermite polynomials and depending 
-//  on the bound, and basis vector they ten to go off to infinity at the end points, However should fit and function
-//  like the could which behaves gaussian, very well.
+//  on the bound, and basis vector are highly oscillatory at the end points. However should fit and function
+//  like the could which behaves gaussian with end points converging to 0 so it makes sense that part is harder
+//	to fit.
 //
 //
 //
