@@ -15,7 +15,11 @@
 //  combination of their basis functions.  Thus the greater the size of the basis the more vectors that can be 
 //  combined to form the true wavefunction. The lower the b value makes the overall wavefunction much better,
 //  I would assume this is because we are using a HO basis which is bounded so if you try to extend the length it
-//  becomes a worse approximation and you would want to use a different basis.
+//  becomes a worse approximation and you would want to use a different basis. Based on the error plot from the
+//  error assement you can see that the low range values are the best fit while high and mid are generally poor in
+//  in comparison.  This again can be attributed to the HO basis.  These are the Hermite polynomials and depending 
+//  on the bound, and basis vector they ten to go off to infinity at the end points, However should fit and function
+//  like the could which behaves gaussian, very well.
 //
 //
 //
