@@ -8,6 +8,9 @@
 #       17-April-2020: changed to use gaussian integration, added plots
 #       20-April-2020: Added wavefunction constructor and plot
 #       24-April-2020: Error plotting added
+#       1-May-2020:  Finishing touches, I also ran one with 0-100 NPTs, this 
+#               takes a long time so I attached a pdf with the figures
+#               though modifying the loop before the matrices can reproduce it.
 #
 #
 #
@@ -57,16 +60,19 @@ b = 10.0;
 kx = [];               #Energy
 y = [];                #sin^2(shift)
 yanalytical = [];      #Analytical sin^2(shift)
-erh = [];               #Error high peak
-erm = [];               # Error saddle
-erl = [];               #Error low peak
-quadsize = [];          #Gaussian points
 
+erl = [];               #Error low peak
+quadsize = [];
+logquadsize = [];          #Gaussian points
+error = [];               #Error low peak
 
 #***** Looping over gaussian quadrantures with different number of points***
-for l in range (20, 27, 1):
-    scale = l/2; M = l+1   ;
-    quadsize.append(l)         
+for l in range (16, 30, 1):
+    scale = l/2; M = l+1;
+    q = float(l);
+    quadsize.append(q)
+    logquadsize.append(np.log(q))
+         
     ko = 0.02     
     
     print ("Computing for npts = " + str(l))
@@ -105,62 +111,72 @@ for l in range (20, 27, 1):
         shiftAn =(np.arctan(num/den))                     #analytical solution
         sinAn2 = np.sin(shiftAn)**2
         #Grabbing points from peaks and saddles for error analysis
-        if ko*ko == 0.19335084531165903: 
-            erh.append(np.log(abs((sinAn2-sin2)/sinAn2)))
-        if ko*ko == 0.12639596032002032: 
-            erm.append(np.log(abs((sinAn2-sin2)/sinAn2)))
         if ko*ko == 0.021585587247483103: 
-            erl.append(np.log(abs((sinAn2-sin2)/sinAn2)))
+            erl.append(np.log(abs((sinAn2-sin2)/sinAn2)))   
         yanalytical.append(sinAn2)
         y.append(sin2)                                    
         kx.append(ko*ko)                             ##Energy with h=m=1 
         ko = ko + 0.2*np.pi/1000  
-                 
+    t = sum(y)
+    z = sum(yanalytical)
+    error.append(np.log(abs((z-t)/z)))
+    z = 0
+    t = 0
+                
 #*************************************************************************
     
 # Plotting the energy vs sin^2(shift)
+    #%%
 fig, p = plt.subplots(figsize=(5, 3))
 p.plot(kx[1:900],yanalytical[1:900], color='b')
 p.plot(kx[1:900], y[1:900],color='r')
-p.plot(kx[1801:2700], y[1801:2700], color='g')
-p.plot(kx[3601:4500], y[3601:4500], color='c')
-p.plot(kx[5401:6300], y[5401:6300], color='m')
+p.plot(kx[2700:3600], y[2700:3600], color='g')
+p.plot(kx[9000:9900], y[9000:9900],color='m')
+p.plot(kx[10801:11700], y[10801:11700], color='c')
+
 #   Legend
 an = mpatches.Patch(color='b', label='Analytical Solution')
 n16 = mpatches.Patch(color='r', label='n = 16');
-n18 = mpatches.Patch(color='g', label='n = 18')
-n20 = mpatches.Patch(color='c', label='n = 20')
-n22 = mpatches.Patch(color='m', label='n = 22')
-p.legend(bbox_to_anchor=(1.05, 1), handles=[n16, n18, n20, n22, an], loc = 'upper left')
+n19 = mpatches.Patch(color='g', label='n = 19')
+n26 = mpatches.Patch(color='m', label='n = 26')
+n28 = mpatches.Patch(color='c', label='n = 28')
+
+p.legend(bbox_to_anchor=(1.05, 1), handles=[n16, n19, n26, n28, an], loc = 'upper left')
 #   Axis and Title
 p.set_title(r'Energy dependence on Phase', fontsize=14, fontweight='bold')
 p.set_xlabel('Energy', fontsize=14)
 p.set_ylabel(r'$sin^2$ ($\delta$)', fontsize=14)
 plt.show()
 
-
 # % Error Plot
+#%%
 [float(i) for i in quadsize]
 [float(i) for i in erl]
 errorx= np.asarray(quadsize)
+errorg =  np.asarray(error)
 errory = np.asarray(erl)
-slope, intercept = np.polyfit(errorx, errory, 1)
-print(r'The slope of the error fit is', slope)
+
+slope, intercept = np.polyfit(errorx, errorg, 1)
+slope2, intercept = np.polyfit(errorx, errory, 1)
+print(r'The slope of the global error fit is', slope)
+print(r'The slope of fixed point error fit is', slope2)
 fig, er = plt.subplots(figsize=(5, 3))
-er.scatter(quadsize ,erh, color='b')
-er.scatter(quadsize ,erm, color='r')
 er.scatter(quadsize ,erl, color='g')
+er.scatter(quadsize ,error)
 #   Legend
 l = mpatches.Patch(color='g', label='k = 0.021')
-m = mpatches.Patch(color='r', label='k = 0.126')
-h = mpatches.Patch(color='b', label='k = 0.193')
+m = mpatches.Patch(color='r', label='global')
+slope, intercept = np.polyfit(errorx, errorg, 1)
 #   Axis and Title
-er.legend(bbox_to_anchor=(1.05, 1), handles=[l, m, h], loc = 'upper left')
+er.legend(bbox_to_anchor=(1.05, 1), handles=[l, m], loc = 'upper left')
 er.set_title(r'Error vs Number of Points', fontsize=14, fontweight='bold')
 er.set_xlabel('Number of points', fontsize=14)
-er.set_ylabel('log(Error)', fontsize=14)
+er.set_ylabel('Log(Error)', fontsize=14)
+
+# Fitting the scatter plots
 
 er.plot(np.unique(errorx), np.poly1d(np.polyfit(errorx, errory, 1))(np.unique(errorx)))
+er.plot(np.unique(errorx), np.poly1d(np.polyfit(errorx, errorg, 1))(np.unique(errorx)))
 
 plt.show()
 
